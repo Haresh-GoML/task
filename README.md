@@ -1,37 +1,48 @@
-# Full-Stack Task Manager with Authentication
+# 🚀 Full-Stack Task Manager with Authentication
 
-A complete full-stack task management application with user authentication, built with React + TypeScript frontend and Express + TypeScript backend.
+A complete full-stack task management application with user authentication, built with **React + TypeScript** frontend and **Express + TypeScript** backend.
 
-## Features
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
 
-- ✅ User Registration & Login
-- ✅ JWT Access Token (15 minutes expiry)
-- ✅ JWT Refresh Token (7 days expiry)
-- ✅ Secure Logout with Token Revocation
-- ✅ User-Scoped Task CRUD Operations
-- ✅ MongoDB Integration with Mongoose
-- ✅ TypeScript on Both Frontend & Backend
-- ✅ Password Hashing with bcrypt
-- ✅ Protected Routes & Authentication Middleware
+## ✨ Features
 
-## Project Structure
+- ✅ **User Registration & Login** with secure JWT authentication
+- ✅ **JWT Access Token** (15 minutes expiry) with automatic refresh
+- ✅ **JWT Refresh Token** (7 days expiry) stored securely
+- ✅ **Secure Logout** with token revocation
+- ✅ **User-Scoped Task Operations** - Users can only see their own tasks
+- ✅ **Complete CRUD Operations** for tasks
+- ✅ **MongoDB Integration** with Mongoose ODM
+- ✅ **Full TypeScript** on both frontend and backend
+- ✅ **Password Hashing** with bcrypt
+- ✅ **Protected Routes** with authentication middleware
+- ✅ **Automatic Token Refresh** on expiry
+- ✅ **Persistent Authentication** across page refreshes
+- ✅ **Modern UI** with clean, responsive design
+
+## 🏗️ Project Structure
 
 ```
 task-manager-api/
-├── src/                      # Backend source (TypeScript)
+├── src/                          # Backend TypeScript Source
 │   ├── config/
-│   │   └── db.ts             # MongoDB connection
+│   │   └── db.ts                 # MongoDB connection
 │   ├── models/
-│   │   ├── User.ts           # User model
-│   │   ├── Task.ts           # Task model (with userId)
-│   │   └── RefreshToken.ts   # Refresh token model
+│   │   ├── User.ts               # User model
+│   │   ├── Task.ts               # Task model with userId
+│   │   └── RefreshToken.ts       # Refresh token model
 │   ├── middleware/
-│   │   └── auth.ts           # JWT authentication middleware
+│   │   └── auth.ts               # JWT authentication middleware
 │   ├── routes/
-│   │   ├── auth.ts           # Auth routes (register, login, refresh, logout)
-│   │   └── tasks.ts          # Task routes (CRUD with user ownership)
-│   └── server.ts             # Express app entry point
-├── frontend/                 # React frontend (TypeScript)
+│   │   ├── auth.ts               # Auth routes
+│   │   └── tasks.ts              # Task routes (user-scoped)
+│   └── server.ts                 # Express app entry point
+│
+├── frontend/                     # React TypeScript Frontend
 │   ├── src/
 │   │   ├── components/
 │   │   │   └── ProtectedRoute.tsx
@@ -42,283 +53,288 @@ task-manager-api/
 │   │   │   ├── Login.tsx
 │   │   │   └── Tasks.tsx
 │   │   ├── services/
-│   │   │   └── api.ts        # API service for auth & tasks
+│   │   │   └── api.ts
 │   │   ├── App.tsx
-│   │   ├── App.css
 │   │   └── main.tsx
-│   └── .env                  # Frontend environment variables
-├── .env                      # Backend environment variables
+│   └── .env.example
+│
+├── .env.example                  # Backend environment template
 ├── .gitignore
-├── tsconfig.json
 ├── package.json
+├── tsconfig.json
 └── README.md
 ```
 
-## Environment Variables
-
-### Backend (.env)
-```
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_access_token_secret
-JWT_REFRESH_SECRET=your_refresh_token_secret
-PORT=3000
-FRONTEND_URL=http://localhost:5173
-```
-
-### Frontend (.env)
-```
-VITE_API_URL=http://localhost:3000
-```
-
-## Installation & Setup
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB Atlas account or local MongoDB
-- npm or yarn
 
-### Backend Setup
+- **Node.js** (v14 or higher)
+- **MongoDB Atlas** account (or local MongoDB)
+- **npm** or **yarn**
 
-1. Install backend dependencies:
+### 1. Clone the Repository
+
 ```bash
-cd task-manager-api
+git clone git@github.com:Haresh-GoML/task.git
+cd task
+```
+
+### 2. Backend Setup
+
+```bash
+# Install backend dependencies
 npm install
+
+# Create .env file from example
+cp .env.example .env
+
+# Edit .env and add your MongoDB URI and JWT secrets
+# MONGO_URI=your_mongodb_connection_string
+# JWT_SECRET=your_access_token_secret
+# JWT_REFRESH_SECRET=your_refresh_token_secret
+# PORT=3000
+# FRONTEND_URL=http://localhost:5173
 ```
 
-2. Install TypeScript dependencies:
+**Generate secure JWT secrets:**
 ```bash
-npm install --save-dev typescript @types/express @types/node @types/bcrypt @types/cors @types/jsonwebtoken ts-node-dev
+# On Linux/Mac
+openssl rand -base64 32
+
+# Or use online tool: https://randomkeygen.com/
 ```
 
-3. Configure environment variables in `.env`
-
-4. Run backend:
 ```bash
-# Development mode
+# Run backend in development mode
 npm run dev
 
-# Production mode
+# Or build and run in production mode
 npm run build
 npm start
 ```
 
 Backend will run on `http://localhost:3000`
 
-### Frontend Setup
+### 3. Frontend Setup
 
-1. Install frontend dependencies:
 ```bash
+# Navigate to frontend directory
 cd frontend
+
+# Install frontend dependencies
 npm install
-```
 
-2. Configure frontend environment variable in `.env`
+# Create .env file from example
+cp .env.example .env
 
-3. Run frontend:
-```bash
+# Edit .env if needed (default should work)
+# VITE_API_URL=http://localhost:3000
+
+# Run frontend in development mode
 npm run dev
 ```
 
 Frontend will run on `http://localhost:5173`
 
-## API Endpoints
+### 4. MongoDB Setup
 
-### Authentication Endpoints
+**Option A: MongoDB Atlas (Recommended for beginners)**
 
-#### Register
-```
-POST /auth/register
-Content-Type: application/json
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free account
+3. Create a new cluster (Free M0 tier)
+4. Create a database user
+5. Whitelist your IP address (or use 0.0.0.0/0 for development)
+6. Get your connection string
+7. Add it to `.env` as `MONGO_URI`
 
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
+**Option B: Local MongoDB**
 
-#### Login
-```
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-
-Response:
-{
-  "message": "Login successful",
-  "accessToken": "jwt_token",
-  "refreshToken": "refresh_token"
-}
-```
-
-#### Refresh Token
-```
-POST /auth/refresh
-Content-Type: application/json
-
-{
-  "refreshToken": "refresh_token"
-}
-
-Response:
-{
-  "message": "Access token refreshed successfully",
-  "accessToken": "new_jwt_token"
-}
-```
-
-#### Logout
-```
-POST /auth/logout
-Content-Type: application/json
-
-{
-  "refreshToken": "refresh_token"
-}
-```
-
-### Task Endpoints (All require Authorization header)
-
-#### Get All Tasks (User's own tasks only)
-```
-GET /tasks
-Authorization: Bearer <access_token>
-```
-
-#### Create Task
-```
-POST /tasks
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "title": "Learn React"
-}
-```
-
-#### Update Task
-```
-PUT /tasks/:id
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "title": "Learn TypeScript",
-  "done": true
-}
-```
-
-#### Delete Task
-```
-DELETE /tasks/:id
-Authorization: Bearer <access_token>
-```
-
-## User Ownership & Security
-
-### CRITICAL Security Features:
-1. **userId from JWT**: All task operations use `req.user.userId` from the verified JWT, NEVER from request body
-2. **Scoped Queries**: Tasks are filtered by userId:
-   - `GET /tasks` → Returns only current user's tasks
-   - `PUT /tasks/:id` → Updates only if task belongs to user
-   - `DELETE /tasks/:id` → Deletes only if task belongs to user
-3. **Token Security**:
-   - Access tokens expire in 15 minutes
-   - Refresh tokens stored in MongoDB
-   - Logout revokes refresh tokens
-4. **Password Security**:
-   - Passwords hashed with bcrypt (10 rounds)
-   - Never returned in API responses
-
-## Testing Multi-User Isolation
-
-### Test with TWO users:
-
-1. **Register User A**
-   - Register with `userA@test.com`
-   - Login and create 2 tasks
-   - Verify you see only your 2 tasks
-
-2. **Register User B**
-   - Register with `userB@test.com`
-   - Login and create 1 task
-   - Verify you see only your 1 task (NOT User A's tasks)
-
-3. **Verify Isolation**
-   - User B should NOT be able to:
-     - See User A's tasks
-     - Update User A's tasks
-     - Delete User A's tasks
-
-## Deployment
-
-### Backend Deployment (Render/Heroku)
-
-1. Build the TypeScript code:
 ```bash
-npm run build
+# Install MongoDB locally
+# Then use connection string:
+MONGO_URI=mongodb://localhost:27017/task-manager
 ```
 
-2. Set environment variables in hosting platform:
+## 📡 API Endpoints
+
+### Authentication
+
+```
+POST   /auth/register     - Register new user
+POST   /auth/login        - Login user
+POST   /auth/refresh      - Refresh access token
+POST   /auth/logout       - Logout user
+```
+
+### Tasks (All Protected)
+
+```
+GET    /tasks             - Get user's own tasks
+POST   /tasks             - Create task
+PUT    /tasks/:id         - Update task (if owned by user)
+DELETE /tasks/:id         - Delete task (if owned by user)
+```
+
+## 🔐 Authentication Flow
+
+```
+1. User registers → Password hashed → Stored in MongoDB
+2. User logs in → Password verified → JWT tokens generated
+3. Access token (15min) + Refresh token (7d) returned
+4. Frontend stores tokens in localStorage
+5. Protected requests include: Authorization: Bearer <accessToken>
+6. Backend verifies token → Extracts userId → Sets req.user
+7. All queries filtered by req.user.userId
+8. Access token expires → Automatically refresh using refresh token
+9. User logs out → Refresh token revoked from MongoDB
+```
+
+## 🔒 Security Features
+
+- ✅ **Password Hashing** with bcrypt (10 rounds)
+- ✅ **JWT Access Tokens** (short-lived, 15 minutes)
+- ✅ **JWT Refresh Tokens** (long-lived, 7 days, stored in DB)
+- ✅ **Token Revocation** on logout
+- ✅ **Automatic Token Refresh** on 401 errors
+- ✅ **User-Scoped Operations** - Tasks filtered by userId from JWT
+- ✅ **CORS Configuration** to allow only specified frontend
+- ✅ **Environment Variables** for sensitive data
+- ✅ **Never Trusts Client-Side userId** - Always from verified JWT
+
+### Critical Security Implementation
+
+```typescript
+// ❌ WRONG - Trusts client
+const { userId } = req.body;
+await Task.find({ userId });
+
+// ✅ CORRECT - Uses JWT
+await Task.find({ userId: req.user.userId });
+```
+
+## 🧪 Testing
+
+### Test Authentication Flow
+
+```bash
+# Register User
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
+
+# Login
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
+
+# Save the accessToken from response
+
+# Create Task
+curl -X POST http://localhost:3000/tasks \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{"title":"Learn TypeScript"}'
+
+# Get Tasks
+curl -X GET http://localhost:3000/tasks \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### Test Multi-User Isolation
+
+1. Register User A and create tasks
+2. Register User B and create tasks
+3. Login as User A → Should only see User A's tasks
+4. Login as User B → Should only see User B's tasks
+5. User B cannot access/update/delete User A's tasks ✅
+
+## 🚢 Deployment
+
+### Backend (Render/Heroku)
+
+1. Push code to GitHub
+2. Create account on [Render](https://render.com)
+3. Create new Web Service
+4. Connect GitHub repository
+5. Set environment variables:
    - `MONGO_URI`
    - `JWT_SECRET`
    - `JWT_REFRESH_SECRET`
    - `PORT`
-   - `FRONTEND_URL` (deployed frontend URL)
+   - `FRONTEND_URL`
+6. Deploy!
 
-3. Start command: `npm start`
+### Frontend (Vercel/Netlify)
 
-### Frontend Deployment (Vercel/Netlify)
+1. Create account on [Vercel](https://vercel.com)
+2. Import GitHub repository
+3. Set root directory to `frontend`
+4. Set environment variable:
+   - `VITE_API_URL` = your deployed backend URL
+5. Deploy!
 
-1. Build the frontend:
-```bash
-npm run build
-```
-
-2. Set environment variable:
-   - `VITE_API_URL` (deployed backend URL)
-
-3. Deploy the `dist` folder
-
-### MongoDB Deployment
-
-Use MongoDB Atlas:
-1. Create a cluster
-2. Create a database user
-3. Whitelist IP addresses
-4. Get connection string
-5. Update `MONGO_URI` in backend `.env`
-
-## Technologies Used
+## 📚 Technologies Used
 
 ### Backend
-- Node.js
-- Express.js
-- TypeScript
-- MongoDB
-- Mongoose
-- bcrypt
-- jsonwebtoken
-- cors
-- dotenv
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **TypeScript** - Type-safe JavaScript
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB ODM
+- **bcrypt** - Password hashing
+- **jsonwebtoken** - JWT authentication
+- **cors** - Cross-origin resource sharing
+- **dotenv** - Environment variables
 
 ### Frontend
-- React 19
-- TypeScript
-- React Router DOM
-- Vite
-- CSS3
+- **React 19** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **React Router DOM** - Client-side routing
+- **Vite** - Build tool & dev server
+- **CSS3** - Styling
 
-## Lab 2 Requirements Checklist
+## 🤝 Contributing
 
-✅ **Requirement 1**: Wire up register/login forms calling POST /auth/register and POST /auth/login
-✅ **Requirement 2**: Store JWT access token and send as Authorization: Bearer <token> on every protected request
-✅ **Requirement 3**: Scope every task fetch/create/update/delete to req.user.userId on backend
-✅ **Requirement 4**: Ready for deployment (environment variables configured, build scripts ready)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📝 Environment Variables
 
-MIT
+### Backend `.env`
+
+```env
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
+JWT_SECRET=your_super_secret_access_token_key
+JWT_REFRESH_SECRET=your_super_secret_refresh_token_key
+PORT=3000
+FRONTEND_URL=http://localhost:5173
+```
+
+### Frontend `.env`
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👤 Author
+
+**Haresh**
+
+- GitHub: [@Haresh-GoML](https://github.com/Haresh-GoML)
+
+## ⭐ Show Your Support
+
+Give a ⭐️ if this project helped you!
+
+---
+
+**Made with ❤️ using TypeScript, React, and Express**
