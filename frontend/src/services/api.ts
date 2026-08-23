@@ -108,14 +108,30 @@ export const authService = {
   // Called by AuthContext on mount to determine if the user is authenticated.
   // Since HTTP-only cookies are invisible to JS, this endpoint validates
   // the accessToken cookie server-side and returns the current user.
+  // If the accessToken is expired (401), it attempts to refresh using refreshToken.
   me: async () => {
-    const response = await fetch(`${API_URL}/auth/me`, {
+    let response = await fetch(`${API_URL}/auth/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
     });
+
+    if (response.status === 401) {
+      try {
+        await authService.refresh();
+        response = await fetch(`${API_URL}/auth/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+      } catch {
+        throw new Error("Not authenticated");
+      }
+    }
 
     if (!response.ok) {
       throw new Error("Not authenticated");

@@ -12,16 +12,28 @@ import taskRoutes from "./routes/tasks";
 
 const app = express();
 
+// Trust proxy for secure cookies behind reverse proxies (Render, Cloudflare, Vercel)
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 
 // CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.replace(/\/$/, "")] : []),
+];
+
 app.use(
   cors({
-    origin:
-      process.env.FRONTEND_URL ||
-      "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
   })
 );

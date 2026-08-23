@@ -11,11 +11,13 @@ const router = Router();
 // COOKIE OPTIONS
 // ==========================
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction =
+  process.env.NODE_ENV === "production" ||
+  (process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes("localhost"));
 
 const accessCookieOptions = {
   httpOnly: true,
-  secure: isProduction,
+  secure: Boolean(isProduction),
   sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
   maxAge: 15 * 60 * 1000, // 15 minutes — matches "15m" JWT expiry
   path: "/",
@@ -23,7 +25,7 @@ const accessCookieOptions = {
 
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: isProduction,
+  secure: Boolean(isProduction),
   sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days — matches "7d" JWT expiry
   path: "/",
