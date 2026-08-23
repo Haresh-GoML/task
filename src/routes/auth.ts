@@ -3,8 +3,31 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import RefreshToken from "../models/RefreshToken";
+import { requireAuth, AuthRequest } from "../middleware/auth";
 
 const router = Router();
+
+// ==========================
+// COOKIE OPTIONS
+// ==========================
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const accessCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  maxAge: 15 * 60 * 1000, // 15 minutes — matches "15m" JWT expiry
+  path: "/",
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days — matches "7d" JWT expiry
+  path: "/",
+};
 
 // ==========================
 // REGISTER
@@ -131,13 +154,15 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     });
 
     // ==========================
-    // Send Tokens
+    // Set HTTP-only cookies
+    // Tokens are NOT returned in JSON body
     // ==========================
+
+    res.cookie("accessToken", accessToken, accessCookieOptions);
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       message: "Login successful",
-      accessToken: accessToken,
-      refreshToken: refreshToken,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -154,7 +179,8 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 
 router.post("/refresh", async (req: Request, res: Response): Promise<void> => {
   try {
-    const { refreshToken } = req.body;
+    // Read refresh token from HTTP-only cookie (NOT from request body)
+    const refreshToken = req.cookies?.refreshToken;
 
     // Check refresh token
     if (!refreshToken) {
@@ -218,9 +244,11 @@ router.post("/refresh", async (req: Request, res: Response): Promise<void> => {
       }
     );
 
+    // Set new access token as HTTP-only cookie
+    res.cookie("accessToken", newAccessToken, accessCookieOptions);
+
     res.status(200).json({
       message: "Access token refreshed successfully",
-      accessToken: newAccessToken,
     });
   } catch (error) {
     console.error("Refresh token error:", error);
@@ -237,34 +265,57 @@ router.post("/refresh", async (req: Request, res: Response): Promise<void> => {
 
 router.post("/logout", async (req: Request, res: Response): Promise<void> => {
   try {
-    const { refreshToken } = req.body;
+    // Read refresh token from HTTP-only cookie (NOT from request body)
+    const refreshToken = req.cookies?.refreshToken;
 
-    // Check refresh token
-    if (!refreshToken) {
-      res.status(400).json({
-        message: "Refresh token is required",
+    if (refreshToken) {
+      // Delete refresh token from MongoDB
+      await RefreshToken.findOneAndDelete({
+        token: refreshToken,
       });
-      return;
     }
 
-    // Delete refresh token from MongoDB
-    const deletedToken = await RefreshToken.findOneAndDelete({
-      token: refreshToken,
-    });
-
-    // Token not found
-    if (!deletedToken) {
-      res.status(404).json({
-        message: "Refresh token not found",
-      });
-      return;
-    }
+    // Clear both authentication cookies regardless of DB result
+    res.clearCookie("accessToken", accessCookieOptions);
+    res.clearCookie("refreshToken", refreshCookieOptions);
 
     res.status(200).json({
       message: "Logout successful",
     });
   } catch (error) {
     console.error("Logout error:", error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// ==========================
+// GET CURRENT USER
+// GET /auth/me
+// Used by the frontend to determine auth state
+// (because HTTP-only cookies cannot be read by JS)
+// ==========================
+
+router.get("/me", requireAuth, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findById(req.user!.userId).select("-password");
+
+    if (!user) {
+      res.status(404).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      user: {
+        userId: user._id.toString(),
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Get me error:", error);
     res.status(500).json({
       message: "Server error",
     });

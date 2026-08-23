@@ -13,18 +13,8 @@ export const requireAuth = (
   res: Response,
   next: NextFunction
 ): void => {
-  // Get Authorization header
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    res.status(401).json({
-      message: "Authentication required",
-    });
-    return;
-  }
-
-  // Extract token
-  const token = authHeader.split(" ")[1];
+  // Read access token from HTTP-only cookie (previously Authorization header)
+  const token = req.cookies?.accessToken;
 
   if (!token) {
     res.status(401).json({

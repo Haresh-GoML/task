@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService } from "../services/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  accessToken: string | null;
-  refreshToken: string | null;
   isLoading: boolean;
-  login: (accessToken: string, refreshToken: string) => void;
-  logout: () => void;
-  updateAccessToken: (newAccessToken: string) => void;
+  login: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,55 +13,53 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // On mount, verify auth state by calling /auth/me.
+  // HTTP-only cookies are invisible to JS, so we ask the server whether
+  // the current accessToken cookie is valid.
   useEffect(() => {
-    // Load tokens from localStorage on mount
-    const storedAccessToken = localStorage.getItem("accessToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
+    const checkAuth = async () => {
+      try {
+        await authService.me();
+        setIsAuthenticated(true);
+      } catch {
+        // No valid session — user needs to log in
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (storedAccessToken && storedRefreshToken) {
-      setAccessToken(storedAccessToken);
-      setRefreshToken(storedRefreshToken);
-    }
-    
-    // Mark loading as complete
-    setIsLoading(false);
+    checkAuth();
   }, []);
 
-  const login = (newAccessToken: string, newRefreshToken: string) => {
-    localStorage.setItem("accessToken", newAccessToken);
-    localStorage.setItem("refreshToken", newRefreshToken);
-    setAccessToken(newAccessToken);
-    setRefreshToken(newRefreshToken);
+  // Called after a successful login API response.
+  // Tokens are already stored in HTTP-only cookies by the server.
+  // We only need to update local auth state.
+  const login = () => {
+    setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setAccessToken(null);
-    setRefreshToken(null);
+  // Calls the logout API (server clears cookies), then updates local state.
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Even if the API call fails, clear local auth state
+    } finally {
+      setIsAuthenticated(false);
+    }
   };
-
-  const updateAccessToken = (newAccessToken: string) => {
-    localStorage.setItem("accessToken", newAccessToken);
-    setAccessToken(newAccessToken);
-  };
-
-  const isAuthenticated = !!accessToken && !!refreshToken;
 
   return (
     <AuthContext.Provider
-      value={{ 
-        isAuthenticated, 
-        accessToken, 
-        refreshToken, 
-        isLoading, 
-        login, 
-        logout, 
-        updateAccessToken 
+      value={{
+        isAuthenticated,
+        isLoading,
+        login,
+        logout,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { taskService, authService } from "../services/api";
+import { taskService } from "../services/api";
 import type { Task } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -12,7 +12,7 @@ const Tasks: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { logout, refreshToken } = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
     fetchTasks();
@@ -105,14 +105,10 @@ const Tasks: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      if (refreshToken) {
-        await authService.logout(refreshToken);
-      }
-      logout();
+      await logout();
       navigate("/login");
-    } catch (err) {
-      // Even if logout API fails, clear local state
-      logout();
+    } catch {
+      // Even if logout fails, navigate away
       navigate("/login");
     }
   };
