@@ -1,30 +1,15 @@
-import { Request, Response } from "express";
 import dotenv from "dotenv";
 import connectDB from "../src/config/db";
 import app from "../src/app";
 
-// Load environment variables
+// Load environment variables (for local development; Vercel injects them automatically)
 dotenv.config();
 
-// Connect to MongoDB before handling requests
-let dbConnected = false;
+// Connect to MongoDB — db.ts caches the connection via the isConnected flag,
+// so repeated cold-start invocations on Vercel reuse the existing connection.
+connectDB().catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
 
-const handler = async (req: Request, res: Response) => {
-  // Ensure DB connection on cold start
-  if (!dbConnected) {
-    try {
-      await connectDB();
-      dbConnected = true;
-    } catch (error) {
-      console.error("Failed to connect to MongoDB:", error);
-      return res.status(500).json({ 
-        message: "Database connection failed" 
-      });
-    }
-  }
-
-  // Handle the request with Express app
-  return app(req, res);
-};
-
-export default handler;
+// Export the Express app directly — @vercel/node accepts Application as default export.
+export default app;

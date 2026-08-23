@@ -2,11 +2,12 @@
   "name": "task-manager-api",
   "version": "1.0.0",
   "description": "Task Manager API with TypeScript",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "vercel-build": "tsc",
+    "start": "node dist/src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
